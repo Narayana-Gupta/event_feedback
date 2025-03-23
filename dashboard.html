@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<title>Dashboard</title>
+<script src="https://www.gstatic.com/firebasejs/10.3.0/firebase-database.js"></script>
+<script src="firebase-config.js"></script>
+</head>
+<body>
+<h2>Dashboard</h2>
+<div id="adminSection" style="display:none;">
+<input type="text" id="eventName" placeholder="Event Name">
+<button onclick="createEvent()">Create Event</button>
+</div>
+<h3>Available Events</h3>
+<ul id="eventList"></ul>
+
+<script>
+    let userRole = localStorage.getItem("userRole");
+    if (userRole === "admin") {
+        document.getElementById("adminSection").style.display = "block";
+    }
+
+    function createEvent() {
+        let eventName = document.getElementById("eventName").value;
+        firebase.database().ref("events").push({
+            name: eventName
+        });
+    }
+
+    firebase.database().ref("events").on("value", snapshot => {
+        document.getElementById("eventList").innerHTML = "";
+        snapshot.forEach(childSnapshot => {
+            let event = childSnapshot.val();
+            let li = document.createElement("li");
+            li.innerHTML = `<a href="event.html?id=${childSnapshot.key}">${event.name}</a>`;
+            document.getElementById("eventList").appendChild(li);
+        });
+    });
+</script>
+</body>
+</html>
