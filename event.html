@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<title>Event Feedback</title>
+</head>
+<body>
+<h2>Live Feedback</h2>
+<input type="text" id="message" placeholder="Enter feedback">
+<button onclick="sendFeedback()">Send</button>
+<ul id="feedbackList"></ul>
+
+<h3>Rate this event</h3>
+<input type="number" id="rating" min="1" max="5">
+<button onclick="submitRating()">Submit Rating</button>
+
+<script>
+    let eventId = new URLSearchParams(window.location.search).get('id');
+
+    function sendFeedback() {
+        let msg = document.getElementById('message').value;
+        firebase.database().ref(`feedback/${eventId}`).push(msg);
+    }
+
+    function submitRating() {
+        let rating = document.getElementById('rating').value;
+        firebase.database().ref(`ratings/${eventId}`).push(rating);
+    }
+
+    firebase.database().ref(`feedback/${eventId}`).on("value", snapshot => {
+        document.getElementById("feedbackList").innerHTML = "";
+        snapshot.forEach(childSnapshot => {
+            let li = document.createElement("li");
+            li.textContent = childSnapshot.val();
+            document.getElementById("feedbackList").appendChild(li);
+        });
+    });
+</script>
+</body>
+</html>
+
+
