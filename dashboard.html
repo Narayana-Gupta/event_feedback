@@ -1,41 +1,58 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-<title>Dashboard</title>
-<script src="https://www.gstatic.com/firebasejs/10.3.0/firebase-database.js"></script>
-<script src="firebase-config.js"></script>
-</head>
-<body>
-<h2>Dashboard</h2>
-<div id="adminSection" style="display:none;">
+<h2>Welcome to Dashboard</h2>
+<p id="user-role"></p>
+
+<div id="admin-section" style="display: none;">
+<h3>Create Event</h3>
 <input type="text" id="eventName" placeholder="Event Name">
 <button onclick="createEvent()">Create Event</button>
 </div>
+
+<div id="user-section" style="display: none;">
 <h3>Available Events</h3>
 <ul id="eventList"></ul>
+</div>
 
-<script>
-    let userRole = localStorage.getItem("userRole");
-    if (userRole === "admin") {
-        document.getElementById("adminSection").style.display = "block";
-    }
+<script type="module">
+import { auth, database } from "./firebase-config.js";
+import { ref, set, push, onValue } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-database.js";
+import { onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-auth.js";
 
-    function createEvent() {
-        let eventName = document.getElementById("eventName").value;
-        firebase.database().ref("events").push({
-            name: eventName
-        });
-    }
+onAuthStateChanged(auth, (user) => {
+if (user) {
+const userRef = ref(database, "users/" + user.uid);
+onValue(userRef, (snapshot) => {
+const data = snapshot.val();
+document.getElementById("user-role").innerText = "Role: " + data.role;
 
-    firebase.database().ref("events").on("value", snapshot => {
-        document.getElementById("eventList").innerHTML = "";
-        snapshot.forEach(childSnapshot => {
-            let event = childSnapshot.val();
-            let li = document.createElement("li");
-            li.innerHTML = `<a href="event.html?id=${childSnapshot.key}">${event.name}</a>`;
-            document.getElementById("eventList").appendChild(li);
-        });
-    });
+          if (data.role === "admin") {
+              document.getElementById("admin-section").style.display = "block";
+          } else {
+              document.getElementById("user-section").style.display = "block";
+              loadEvents();
+          }
+      });
+  } else {
+      window.location.href = "index.html";
+  }
+});
+
+function createEvent() {
+const eventName = document.getElementById("eventName").value;
+const eventRef = push(ref(database, "events"));
+set(eventRef, { name: eventName });
+alert("Event Created!");
+}
+
+function loadEvents() {
+const eventList = document.getElementById("eventList");
+const eventsRef = ref(database, "events");
+onValue(eventsRef, (snapshot) => {
+eventList.innerHTML = "";
+snapshot.forEach((childSnapshot) => {
+const li = document.createElement("li");
+li.textContent = childSnapshot.val().name;
+eventList.appendChild(li);
+});
+});
+}
 </script>
-</body>
-</html>
