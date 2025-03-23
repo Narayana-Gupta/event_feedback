@@ -1,56 +1,27 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <script type="module">
-import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-app.js";
-import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-auth.js";
-import { getDatabase, ref, set, push, onValue } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-database.js";
-
-// Firebase Config
-import { firebaseConfig } from "./firebase-config.js";
-
-// Initialize Firebase
-const app = initializeApp(firebaseConfig);
-const auth = getAuth();
-const database = getDatabase();
-</script>
-<title>Event Feedback Login</title>
-<script src="https://www.gstatic.com/firebasejs/10.3.0/firebase-app.js"></script>
-<script src="https://www.gstatic.com/firebasejs/10.3.0/firebase-auth.js"></script>
-<script src="firebase-config.js"></script>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Event Feedback System</title>
+<script type="module" src="firebase-config.js"></script>
+<script type="module" src="script.js"></script>
 </head>
 <body>
-<h2>Login / Sign Up</h2>
+<h2>Event Feedback System</h2>
+<div>
 <input type="email" id="email" placeholder="Email">
 <input type="password" id="password" placeholder="Password">
 <select id="role">
 <option value="user">User</option>
 <option value="admin">Admin</option>
 </select>
-<button onclick="signup()">Sign Up</button>
-<button onclick="login()">Login</button>
-
-<script>
-    function signup() {
-        let email = document.getElementById('email').value;
-        let password = document.getElementById('password').value;
-        let role = document.getElementById('role').value;
-
-        firebase.auth().createUserWithEmailAndPassword(email, password).then(userCredential => {
-            localStorage.setItem("userRole", role);
-            localStorage.setItem("userEmail", email);
-            window.location.href = "dashboard.html";
-        });
-    }
-
-    function login() {
-        let email = document.getElementById('email').value;
-        let password = document.getElementById('password').value;
-
-        firebase.auth().signInWithEmailAndPassword(email, password).then(userCredential => {
-            window.location.href = "dashboard.html";
-        });
-    }
-</script>
+<button id="signup">Sign Up</button>
+<button id="login">Login</button>
+</div>
 </body>
 </html>
+
+
+
+
