@@ -1,58 +1,25 @@
-<h2>Welcome to Dashboard</h2>
-<p id="user-role"></p>
-
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Dashboard</title>
+<script type="module" src="firebase-config.js"></script>
+<script type="module" src="script.js"></script>
+</head>
+<body>
+<h2>Dashboard</h2>
 <div id="admin-section" style="display: none;">
 <h3>Create Event</h3>
-<input type="text" id="eventName" placeholder="Event Name">
-<button onclick="createEvent()">Create Event</button>
+<input type="text" id="event-name" placeholder="Event Name">
+<button id="create-event">Create Event</button>
 </div>
 
 <div id="user-section" style="display: none;">
-<h3>Available Events</h3>
-<ul id="eventList"></ul>
+    <h3>Available Events</h3>
+    <ul id="event-list"></ul>
 </div>
 
-<script type="module">
-import { auth, database } from "./firebase-config.js";
-import { ref, set, push, onValue } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-database.js";
-import { onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-auth.js";
-
-onAuthStateChanged(auth, (user) => {
-if (user) {
-const userRef = ref(database, "users/" + user.uid);
-onValue(userRef, (snapshot) => {
-const data = snapshot.val();
-document.getElementById("user-role").innerText = "Role: " + data.role;
-
-          if (data.role === "admin") {
-              document.getElementById("admin-section").style.display = "block";
-          } else {
-              document.getElementById("user-section").style.display = "block";
-              loadEvents();
-          }
-      });
-  } else {
-      window.location.href = "index.html";
-  }
-});
-
-function createEvent() {
-const eventName = document.getElementById("eventName").value;
-const eventRef = push(ref(database, "events"));
-set(eventRef, { name: eventName });
-alert("Event Created!");
-}
-
-function loadEvents() {
-const eventList = document.getElementById("eventList");
-const eventsRef = ref(database, "events");
-onValue(eventsRef, (snapshot) => {
-eventList.innerHTML = "";
-snapshot.forEach((childSnapshot) => {
-const li = document.createElement("li");
-li.textContent = childSnapshot.val().name;
-eventList.appendChild(li);
-});
-});
-}
-</script>
+<button id="logout">Logout</button>
+</body>
+</html>
